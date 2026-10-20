@@ -1,0 +1,36 @@
+{
+  "name": "omp-provider-statusline",
+  "version": "0.2.0",
+  "description": "Show complete provider/model IDs in Oh My Pi's native model segment.",
+  "type": "module",
+  "license": "MIT",
+  "author": "hypn4",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hypn4/omp-provider-statusline.git"
+  },
+  "homepage": "https://github.com/hypn4/omp-provider-statusline#readme",
+  "bugs": {
+    "url": "https://github.com/hypn4/omp-provider-statusline/issues"
+  },
+  "files": [
+    "src/index.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "bun test"
+  },
+  "omp": {
+    "name": "Provider Statusline",
+    "description": "Display full provider/model IDs while preserving the native model segment and its decorations.",
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "devDependencies": {
+    "@oh-my-pi/pi-coding-agent": "18.12.3",
+    "@oh-my-pi/pi-tui": "18.12.3",
+    "@types/bun": "1.3.14"
+  }
+}
