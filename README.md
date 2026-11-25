@@ -1,15 +1,13 @@
 # OMP Provider Statusline
 
-Show the complete `provider/model.id` in OMP's native `model` segment.
+Show the complete `provider/model.id` of the active model in OMP's status line.
 
-| Provider ID | Model ID | Model segment label |
+| Provider ID | Model ID | Status label |
 | --- | --- | --- |
 | `openai-codex` | `gpt-5.6-sol` | `openai-codex/gpt-5.6-sol` |
 | `anthropic` | `claude-sonnet-4-6` | `anthropic/claude-sonnet-4-6` |
 
-IDs are used verbatim, including every component of model IDs containing `/`. The label follows the model in the current native rendering context.
-
-OMP's renderer still handles model icons, thinking levels, compact/automatic thinking, fast/advisor badges, themes, and layout. Terminal-width truncation follows OMP's normal behavior.
+IDs are used verbatim, including every component of model IDs containing `/`. The label follows model switches within about a second and disappears while no model is selected.
 
 ## Installation (recommended)
 
@@ -25,25 +23,26 @@ To update an existing installation:
 omp plugin upgrade omp-provider-statusline
 ```
 
-Restart OMP after upgrading. In OMP 18.12.3, reloading a session does not reload extension code.
+Restart OMP after upgrading; reloading a session does not reload extension code.
 
 ## Configuration
 
-Keep the native `model` segment enabled. Existing presets containing `model` work without changes. For a custom layout, include `model` in `statusLine.leftSegments` or `statusLine.rightSegments`.
+The label is an extension status (key `omp-provider-statusline`), shown next to other extensions' statuses:
 
-The plugin does not need the `status` segment or a particular `showHookStatus` setting. Other extensions' status messages remain independent.
+- With `statusLine.showHookStatus` enabled (the default), it appears in the extension status row.
+- To show it inside the bar, add the `status` segment to `statusLine.leftSegments` or `statusLine.rightSegments`.
 
-### Migrating from 0.1.x
+The native `model` segment and the composer's model chip keep OMP's friendly model name with their thinking, fast, and advisor indicators. Remove `model` from your segments if you want only the full ID.
 
-Replace the `status` entry previously used for this plugin with `model`, preserving your other segments. Keep a separate `status` entry only if you want other extensions' messages in the statusline. Choose `showHookStatus` according to your footer preference.
+### Migrating from 0.2.x
+
+0.2.x relabeled the native `model` segment through a segment registry that OMP 19.2.0 no longer exports; on 19.2.0 and later it only showed a compatibility warning. Upgrade the plugin and use the configuration above to place the label.
 
 ## Compatibility
 
-Tested with OMP 18.12.3. No build step or additional runtime dependencies.
+Tested with OMP 19.2.1. No build step or additional runtime dependencies.
 
-The plugin hooks `api.pi.SEGMENTS.model` from OMP's injected SDK and delegates to the original `render` and `describe` methods. It changes only the label for that render, without modifying session/model data or polling. Hooks are released when the owning extension sessions shut down.
-
-This uses OMP's exported segment registry, not a dedicated stable formatter API. Hosts without a compatible registry retain their native model display and show a compatibility warning.
+The plugin uses only the public extension API: `ctx.ui.setStatus` for the label and `ctx.setInterval` to notice model switches, because OMP emits no model-change event to extensions. It writes the status only when the label changes, never modifies session or model data, and runs only in the main interactive (TUI) session. Its timer and status are removed when the session shuts down.
 
 ## Development
 
@@ -53,15 +52,13 @@ bun test
 omp plugin link .
 ```
 
-Tests exercise the actual OMP 18.12.3 model renderer, including native decorations, complete IDs, model changes, shared hook ownership, and cleanup.
-
 ## Uninstall
 
 ```bash
 omp plugin uninstall omp-provider-statusline
 ```
 
-Restart OMP. The native `model` segment returns to its default label.
+Restart OMP.
 
 ## License
 
